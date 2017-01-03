@@ -1,0 +1,5 @@
+# Created by .ignore support plugin (hsz.mobi)
+#git忽略文件
+/target
+news.iml
+.idea

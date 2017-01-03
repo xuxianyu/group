@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1">
+    <!--加载配置-->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:*-context.xml</param-value>
+    </context-param>
+
+    <!--设置项目根路径-->
+    <context-param>
+        <param-name>newsRootURL</param-name>
+        <param-value>news.root</param-value>
+    </context-param>
+
+    <!--加载spring监听器 只监听启动和关闭 -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    <!--添加spring http请求事件 增强和web容器联系-->
+    <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+    </listener>
+
+    <!--支持 put、delete等请求。需要在springmvc之前-->
+    <filter>
+        <filter-name>HiddenHttpMethodFilter</filter-name>
+        <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>HiddenHttpMethodFilter</filter-name>
+        <url-pattern>/</url-pattern>
+    </filter-mapping>
+
+    <!--字符编码过滤-->
+    <filter>
+        <filter-name>encodingFilter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>encodingFilter</filter-name>
+        <url-pattern>/</url-pattern>
+    </filter-mapping>
+
+    <!--spring mvc 中央控制器-->
+    <servlet>
+        <servlet-name>springMVCDispatcher</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:/spring-mvc.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>springMVCDispatcher</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+    <!--
+       Hibernate经常会遇到LazyInitializationException。
+       这是因为controller和model层（java代码）将通过JPA的一些启用了
+    延迟加载功能的领域
+    （如用getRefrence()方法或者在关联关系中采用fetch=FetchType.LAZY）
+    返回给view层（jsp代码）的时候，由于加载领域对象的JPA Session已经关闭，
+    导致这些延迟加载的数据访问异常。
+    -->
+    <filter>
+        <filter-name>openEntityManagerInViewFilter</filter-name>
+        <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>openEntityManagerInViewFilter</filter-name>
+        <url-pattern>/</url-pattern>
+    </filter-mapping>
+    <!--shiro安全过滤器 注意此配置会导致servlet过滤器被shiro代理-->
+    <filter>
+        <filter-name>shiroSecurityFilter</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>shiroSecurityFilter</filter-name>
+        <url-pattern>/</url-pattern>
+    </filter-mapping>
+</web-app>

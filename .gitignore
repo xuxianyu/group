@@ -14,5 +14,9 @@ results
 npm-debug.log
 node_modules
 
-bin/*
-!bin/www
+#git忽略文件
+/target
+*.iml
+.idea
+*.jar
+*.war
